@@ -4,11 +4,17 @@ import {useContext} from 'react'
 import { AuthContext } from '../../context/AuthContext'
 import "bootstrap/dist/css/bootstrap.min.css";
 import { get } from 'firebase/database';
+import Button from 'react-bootstrap/Button';
+import 'react-bootstrap/dist/react-bootstrap.min.js';
+
 const renderer = ({days,hours,minutes,seconds,completed,props}) => {
-    
+    if (completed) {
+        return null;
+    } 
 
     return (
-        (props.item.status === 'active') ? (
+        (props.item.status === 'waiting' ) ? (
+ 
         <div className="col " >
             <div className="card shadow-sm">
                 <div style={{
@@ -34,34 +40,16 @@ const renderer = ({days,hours,minutes,seconds,completed,props}) => {
                     <p className="lead display-6">
                         {props.item.title}
                     </p>
-                    {!completed ? (
                     <div className="d-flex justify-content-between align-item-center">
                         <h5>
                             {days} day : { hours} hr : {minutes} min : {seconds} sec
                         </h5>
-                    </div>) : (
-                        <>end Auction</>
-                    )}
+                    </div>
                     <p className='card-text'>{props.item.description}</p>
                     <div className="d-flex justify-content-between align-item-center">
                         <div className="btn-group">
                             
-                            {!props.owner ?(
-                                <button onClick={props.bidAuciton} className="btn btn-outline-secondary" >Bid </button>
-
-                            ) : props.userRole === 'admin' ? (
-                                <button />
-                            ) :
-                            props.owner.email === props.item.email ? (
-                                <button onClick={()=>props.endAuction(props.item.id)} className="btn btn-outline-secondary" >Cancel Auction </button>
-                            
-                            ) : props.owner.email===props.item.currentWinner ? (
-                                <div className="btn btn-outline-secondary" >You are winning </div>
-                            ) : (
-                                <button onClick={()=>props.bidAuciton(props.item.id,props.item.currentPrice,props.item.bidPrice)}
-                                 className="btn btn-outline-secondary" >bid </button>
-                            
-                            )}
+                        <Button onClick={()=>props.changeStateAuction('active',props.item.id)} variant="primary">Approve</Button>{' '}
           
                            
                         </div>
@@ -72,20 +60,18 @@ const renderer = ({days,hours,minutes,seconds,completed,props}) => {
             </div>
         </div>) : (
             <></>
-    )
-    
+        )
 
     )
 }
-const AuctionCard = ({item}) => {
+const ApproveAuctionCard = ({item}) => {
     let endDate = item.duration;
-    const {currentUser,bidAuciton,endAuction,userRole} = useContext(AuthContext)
+    const {currentUser,bidAuciton,endAuction,userRole,changeStateAuction} = useContext(AuthContext)
     
   return <>
-  
-
-  <Countdown owner = {currentUser} userRole={userRole} bidAuciton={bidAuciton} endAuction={endAuction} date={endDate} item ={item} renderer={renderer}/>
+   
+  <Countdown changeStateAuction={changeStateAuction} owner = {currentUser} userRole={userRole} bidAuciton={bidAuciton} endAuction={endAuction} date={endDate} item ={item} renderer={renderer}/>
   </>
 }
 
-export default AuctionCard
+export default ApproveAuctionCard

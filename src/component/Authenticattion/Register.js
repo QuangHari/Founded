@@ -41,7 +41,8 @@ const RegisterComponent = () => {
 
   return (
     <>
-      <Button onClick={openForm} variant="outline-secondary">Register</Button>{' '}
+      <Button onClick={openForm} variant="outline-secondary" style={{ color: 'white' ,border:'none'}}>Register</Button>
+      {/* <Button onClick={openForm} variant="outline-secondary">Register</Button>{' '} */}
       <Modal centered show ={showForm} onHide={closeForm}>
         <form onSubmit={submitForm}>
           <Modal.Header>

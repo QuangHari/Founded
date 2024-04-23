@@ -7,6 +7,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { set } from 'firebase/database';
 import { Row, Col } from 'react-bootstrap';
 import { AuthContext } from '../../context/AuthContext';
+import { IconButton } from '@mui/material';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 const AddAuction = ({setAuction}) => {
     const [showForm, setShowForm] = useState(false)
@@ -47,6 +49,7 @@ const AddAuction = ({setAuction}) => {
       itemImage : itemImage.current.files[0],
       duration : dueDatetime,
       currentPrice : startPrice.current.value,
+      status : 'waiting'
     }
     setAuction(newAuction)
     closeForm()
@@ -59,12 +62,14 @@ const AddAuction = ({setAuction}) => {
     return (
       <>
         
-
-        <div className="col d-flex justify-content-center my-3">
+        <IconButton onClick={openForm} size="large" aria-label="add new" color="inherit">
+                    <AddCircleOutlineIcon />
+        </IconButton>
+        {/* <div className="col d-flex justify-content-center my-3">
           <Button onClick={openForm} variant="outline-secondary">
               Create Auction Item
           </Button>{' '}
-        </div>
+        </div> */}
 
         <Modal centered show ={showForm} onHide={closeForm}>
           <form onSubmit={submitForm}>

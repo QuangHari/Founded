@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
+import { styled, alpha ,createTheme,ThemeProvider} from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,12 +14,19 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import logoImg from '../../assets/logo.png';
 import { AuthContext } from '../../context/AuthContext'
-import { useContext } from 'react'
+import { useContext ,useState} from 'react'
 import Login from '../Authenticattion/Login'
 import Register from '../Authenticattion/Register'
+import FOUNDED_LOGO from '../../assets/FOUNDED_LOGO.png'
+import blackLogo from '../../assets/FINALLOGO_Black.png'
+import whiteLogo from '../../assets/FINALLOGO_White.png'
+import './navbar.css'
+import ProgressBar from '../Auction/Progress'
+import AddAuction from '../Auction/AddAuction';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -62,9 +69,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function PrimarySearchAppBar() {
+  function PrimarySearchAppBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const {currentUser,logout,login,register} = useContext(AuthContext)
+  const {currentUser,logout,login,register,userRole} = useContext(AuthContext)
 
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -88,28 +95,44 @@ export default function PrimarySearchAppBar() {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
+    anchorEl={anchorEl}
+    anchorOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}
+    id={menuId}
+    keepMounted
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}
+    open={isMenuOpen}
+    onClose={handleMenuClose}
+  >
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px' }}>
+      <AccountCircle style={{ fontSize: '48px' }} />
+    </div>
+    {currentUser && (
+      <MenuItem disabled>
+        
+        <Typography variant="body2" color="textSecondary">
+          {currentUser.email}
+        </Typography>
+      </MenuItem>
+    )}
+    <MenuItem className="centeredMenuItem" onClick={handleMenuClose}>Profile</MenuItem>
+    <MenuItem className="centeredMenuItem" onClick={handleMenuClose}>My account</MenuItem>
+    <MenuItem className="centeredMenuItem" onClick={() => {
+       handleMenuClose(); // Đóng menu dropdown
+       logout(); // Thực hiện hành động logout
+   
       
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem onClick={logout}>Logout</MenuItem>
-    </Menu>
+    }} >Logout</MenuItem>
+  </Menu>
   );
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
@@ -129,7 +152,12 @@ export default function PrimarySearchAppBar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
+    
+      
+       
+
       <MenuItem>
+      
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
             <MailIcon />
@@ -163,8 +191,35 @@ export default function PrimarySearchAppBar() {
       </MenuItem>
     </Menu>
   );
-
+  const { searchAuction } = useContext(AuthContext);
+  const [searchTerm, setSearchTerm] = useState('');
+  const {docs} = useContext(AuthContext)
+  const handleSearch = async (event) => {
+    event.preventDefault(); // Prevent default form submission behavior if applicable
+    if (searchTerm === '') {
+      console.log(docs);
+      return docs; // Early return if search term is empty
+    }
+    if (!searchTerm.trim()) {
+      
+      return; // Early return if search term is empty
+    }
+    
+    try {
+      const results = await searchAuction(searchTerm);
+      // Handle search results here (e.g., display them in a separate component)
+      console.log('Search results:', results); // Example logging
+    } catch (error) {
+      console.error('Error searching auctions:', error);
+      // setGlobalMsg('An error occurred during search. Please try again later.');
+    } finally {
+      // Optionally clear the search term after a certain time
+      // setTimeout(() => setSearchTerm(''), 5000); // Example with 5-second delay
+    }
+  };
+  const [auction, setAuction] = useState(null)
 return (
+  <>
     <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
             <Toolbar>
@@ -183,25 +238,37 @@ return (
                     component="div"
                     sx={{ display: { xs: 'none', sm: 'block' } }}
                 >
-                    Founded
+                    {/* Founded */}
                 </Typography>
                 <Search>
                     <SearchIconWrapper>
                         <SearchIcon />
                     </SearchIconWrapper>
-                    <StyledInputBase
+                    <form onSubmit={handleSearch}>
+                        <StyledInputBase
+                          placeholder="Search…"
+                          inputProps={{ 'aria-label': 'search' }}
+                          value={searchTerm}
+                          onChange={(event) => setSearchTerm(event.target.value)}
+                        />
+                      </form>
+
+                    {/* <StyledInputBase
                         placeholder="Search…"
                         inputProps={{ 'aria-label': 'search' }}
-                    />
+                    /> */}
                 </Search>
-                <div className="navbar-brand" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginLeft: '200px' }}>
-                    <img src={logoImg} alt="logo" height="75" />
+                <div className="navbar-brand" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginLeft: '300px' }}>
+                    <img src={whiteLogo} alt="logo" height="75" />
                 </div>
                 <Box sx={{ flexGrow: 1 }} />
                 {currentUser ? (
                 <>
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                      
+                        {/* <IconButton size="large" aria-label="add new" color="inherit">
+                          <AddCircleOutlineIcon />
+                        </IconButton> */}
+                        {currentUser && <AddAuction setAuction={setAuction} />}
                         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
                             <Badge badgeContent={4} color="error">
                                 <MailIcon />
@@ -242,6 +309,8 @@ return (
                     </Box>
                 </>) : (
                   <>
+                  
+           
                     < Login />
                     < Register />
                   </>
@@ -251,5 +320,27 @@ return (
         {renderMobileMenu}
         {renderMenu}
     </Box>
+    <div>
+      {auction && <ProgressBar auction = {auction} setAuction={setAuction}/>}
+    </div>
+    </>
 );
 }
+const theme = createTheme({
+  palette: {
+    mode: 'dark', // Chuyển sang chủ đề màu tối
+  },
+});
+
+// Các styled components và hàm PrimarySearchAppBar không thay đổi, chỉ chuyển component bên trong ThemeProvider
+
+const ThemedPrimarySearchAppBar = () => {
+  return (
+    <ThemeProvider theme={theme}>
+      <PrimarySearchAppBar />
+      
+    </ThemeProvider>
+  );
+};
+
+export default ThemedPrimarySearchAppBar;

@@ -15,21 +15,26 @@ const LoginComponent = () => {
   const emailRef = useRef()
   const passwordRef = useRef()
 
-  const {login} = useContext(AuthContext)
+  const {login,userRole} = useContext(AuthContext)
   
   const openForm =() => setShowForm(true)
   const closeForm = () => setShowForm(false)
+
   const submitForm = async (e) => {
     e.preventDefault()
-
+    
     setError('')
     try {
       await login(emailRef.current.value, passwordRef.current.value)
       closeForm()
+      
+      
+
     }catch (error) {
       setError("Invalid email or password")
 
     }
+
   }
 
 
@@ -37,7 +42,9 @@ const LoginComponent = () => {
 
   return (
     <>
-      <Button onClick={openForm} variant="outline-secondary">Login</Button>{' '}
+    <Button onClick={openForm} variant="outline-secondary" style={{ color: 'white' ,border:'none'}}>Login</Button>
+
+      {/* <Button color="secondary">Secondary</Button> */}
       <Modal centered show ={showForm} onHide={closeForm}>
         <form onSubmit={submitForm}>
           <Modal.Header>
