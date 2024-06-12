@@ -12,8 +12,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import banner from '../../assets/banner.webp'
 // import banner from '../../assets/banner3.jpeg'
 import { Box} from '@mui/material';
-
-
+import RecipeReviewCard from '../MUI/MUICard'
+import ReactConfetti from 'react-confetti'
+import Winner from '../MUI/Winner'
 export  const AuctionBody = () => {
   const {currentUser,globalMsg,userRole,searchResults,isSearch} = useContext(AuthContext)
   const [auction, setAuction] = useState(null)
@@ -32,7 +33,7 @@ export  const AuctionBody = () => {
     
     !currentUser ? (
       <>
-
+      {/* <Winner /> */}
       <Box
         sx={{
           position: 'relative',
@@ -40,6 +41,7 @@ export  const AuctionBody = () => {
           height: '1px',
         }}
       ></Box>
+   
        <img
           src={banner}
           alt="banner"
@@ -58,7 +60,7 @@ export  const AuctionBody = () => {
       
       <>
 
-      <div className="py-5" style={{color: 'dark'}}>  
+      <div className="py-5" style={{color: 'dark',margin:'10px'}}>  
           <div className="container">
               {/* {auction && <ProgressBar auction = {auction} setAuction={setAuction}/>} */}
               {globalMsg && <Alert variant ='info' >{globalMsg} </Alert>}
@@ -66,7 +68,7 @@ export  const AuctionBody = () => {
               {/* {currentUser && <AddAuction setAuction={setAuction} />} */}
 
               {listing && (
-                <div className="row row-cols-1 row-cols-sm-2 row-cols-md3 g-3">
+                <div className="row row-cols-4 ">
                
                   {listing.map((listing) => {
                     return <AuctionCard item ={listing} key={listing.id}/>

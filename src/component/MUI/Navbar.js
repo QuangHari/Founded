@@ -196,14 +196,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   const {docs} = useContext(AuthContext)
   const handleSearch = async (event) => {
     event.preventDefault(); // Prevent default form submission behavior if applicable
-    if (searchTerm === '') {
-      console.log(docs);
-      return docs; // Early return if search term is empty
-    }
-    if (!searchTerm.trim()) {
-      
-      return; // Early return if search term is empty
-    }
+    // if (searchTerm === '') {
+    //   console.log(docs);
+    //   return docs; // Early return if search term is empty
+    // }
+    
     
     try {
       const results = await searchAuction(searchTerm);

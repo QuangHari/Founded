@@ -7,6 +7,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { set } from 'firebase/database';
 import { AuthContext } from '../../context/AuthContext'
 import { useContext } from 'react'
+import { TextField } from '@mui/material';
+import { Grid } from '@mui/material';
+import { Typography } from '@mui/material';
+
+
 
 const LoginComponent = () => {
   const [showForm, setShowForm] = useState(false)
@@ -45,7 +50,8 @@ const LoginComponent = () => {
     <Button onClick={openForm} variant="outline-secondary" style={{ color: 'white' ,border:'none'}}>Login</Button>
 
       {/* <Button color="secondary">Secondary</Button> */}
-      <Modal centered show ={showForm} onHide={closeForm}>
+      <Modal centered show ={showForm} onHide={closeForm} >
+        
         <form onSubmit={submitForm}>
           <Modal.Header>
             <Modal.Title>Login</Modal.Title> 
@@ -53,6 +59,8 @@ const LoginComponent = () => {
           <Modal.Body>
             {error && <Alert variant="danger" >{error}</Alert> }
             <Form.Group>
+               
+
               <Form.Label>Email</Form.Label>
               <Form.Control type="email"  required ref={emailRef} />
             </Form.Group>

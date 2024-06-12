@@ -72,11 +72,63 @@ export const AuthProvider = ({children}) => {
             currentWinner : currentUser.email
         })
      }
+     const binItem =(auctionId,binPrice) => {
+        if (!currentUser){
+            
+            return setGlobalMsg('Please login to bid');
+        }
+        
+        
+        const db = fireStoreApp.collection('auctions')
+        return db.doc(auctionId).update({
+            currentPrice : binPrice,
+            currentWinner : currentUser.email,
+            status : 'end',
+        })
+     }
      const endAuction = (auctionId) => {
         const db = fireStoreApp.collection('auctions')
-        return db.doc(auctionId).delete()
+        return db.doc(auctionId).update({
+
+            status : 'end',
+        })
      }
-     
+
+     const rejectAuction = (auctionId) => {
+        const db = fireStoreApp.collection('auctions')
+        return db.doc(auctionId).update({
+            status : 'reject',
+        })
+    
+    }
+
+     const endInOneMinute = async (auctionId) => {
+        try {
+            // Lấy thời gian hiện tại và thêm 1 phút (60 giây)
+            const currentTime = new Date();
+            // const endTime = new Date(currentTime.getTime() + (60 * 1000)); // Thêm 1 phút
+            const end = currentTime.setMinutes(currentTime.getMinutes() + 1);
+            // Cập nhật trường duration trong tài liệu phiên đấu giá
+            const db = fireStoreApp.collection('auctions');
+            await db.doc(auctionId).update({
+                duration: end, // Cập nhật thời gian kết thúc mới
+               
+            });
+    
+            
+        } catch (error) {
+            console.error('Error ending auction:', error);
+            throw error;
+        }
+     }
+     const cancelAuction = (auctionId) => {
+
+        const db = fireStoreApp.collection('auctions')
+        return db.doc(auctionId).update({
+
+            status : 'cancel',
+        })
+    }
      useEffect(() => {
       const subscribe = authApp.onAuthStateChanged(async (user) => {
           setCurrentUser(user);
@@ -100,6 +152,7 @@ export const AuthProvider = ({children}) => {
   
     const searchAuction = async (searchTerm) => {
         if (searchTerm === '')  {
+            setIsSearch(false);
             const results = useFirestore('auctions');
             setSearchResults(results)
             return;
@@ -145,7 +198,7 @@ export const AuthProvider = ({children}) => {
     },[globalMsg])
 
     return (
-        <AuthContext.Provider value ={{isSearch,searchResults,searchAuction,changeStateAuction,currentUser,register,login,logout,bidAuciton,endAuction,globalMsg,registerAdmin,userRole}}>
+        <AuthContext.Provider value ={{rejectAuction,endInOneMinute,cancelAuction,binItem,isSearch,searchResults,searchAuction,changeStateAuction,currentUser,register,login,logout,bidAuciton,endAuction,globalMsg,registerAdmin,userRole}}>
         {!loading && children}
         </AuthContext.Provider>
     )
